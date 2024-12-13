@@ -1,95 +1,158 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World! from C#");
-
-static void ProcessLine(string line)
-{
-    Console.WriteLine("[" + line + "]");
-    string[] words = line.Split(" ");
-    string currentOperator = "none";
-    float result = 0;
-    foreach (string word in words)
-    {
-        Console.WriteLine(word);
-
-        bool isNumber = float.TryParse(word, out float number);
-
-        if (isNumber)
-        {
-            Console.WriteLine("number: " + number);
-            if (currentOperator == "none")
-            {
-                Console.WriteLine(" ! No Operator ! ");
-                result = number;
-            }
-            else if (currentOperator == "add")
-            {
-                Console.WriteLine(" ! Add ! ");
-                result += number;
-            }
-            else if (currentOperator == "subtract")
-            {
-                Console.WriteLine(" ! Subtract ! ");
-                result -= number;
-            }
-            else if (currentOperator == "multiply")
-            {
-                Console.WriteLine(" ! Multiply ! ");
-                result *= number;
-            }
-            else if (currentOperator == "divide")
-            {
-                Console.WriteLine(" ! Divide ! ");
-                result /= number;
-            }
-            else
-            {
-                Console.WriteLine(" ! Unknown Operator ! ");
-            }
-
-            currentOperator = "none";
-            Console.WriteLine("result: " + result);
-        }
-        else
-        {
-            Console.WriteLine(" ! Not a Number ! ");
-            if (currentOperator != "none")
-            {
-                Console.WriteLine(" ! Operator already set ! ");
-            }
-            else
-            if (word == "+")
-            {
-                currentOperator = "add";
-            }
-            else if (word == "-")
-            {
-                currentOperator = "subtract";
-            }
-            else if (word == "*")
-            {
-                currentOperator = "multiply";
-            }
-            else if (word == "/")
-            {
-                currentOperator = "divide";
-            }
-            else
-            {
-                Console.WriteLine(" ! Unknown Operator ! ");
-            }
-        }
-
-    }
-}
+﻿// process a math formula with the operators +, -, *, /, ^, %
+ProcessFormulaVerbose("1 + 2 + 3"); // 6
+ProcessFormulaVerbose("1 + 2 - 3"); // 0
+ProcessFormulaVerbose("1 + 2 * 3"); // 9
+ProcessFormulaVerbose("1 + 2 / 3"); // 1
+ProcessFormulaVerbose("1 + 2 ^ 3"); // 27
+ProcessFormulaVerbose("1 + 2 % 3"); // 0
+ProcessFormulaVerbose("2,5 * 2"); // 5
 
 while (true)
 {
-    Console.Write("Enter a line of text or 'exit': ");
+    Console.Write("Enter a supported math formula: ");
     string? line = Console.ReadLine();
+
     if (line == null || line == "exit")
     {
         Console.WriteLine("Exiting...");
-        break;
+        return;
     }
-    ProcessLine(line);
+
+    ProcessFormulaVerbose(line);
+}
+
+static void ProcessFormulaVerbose(string line)
+{
+    try
+    {
+        var result = ProcessFormula(line);
+        Console.WriteLine($"The result of '{line}' is '{result}'");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error: {ex.Message}");
+    }
+}
+
+static double ProcessFormula(string line)
+{
+    string[] words = line.Split(" "); // split the line into words
+
+    string? currentOperator = null; // the current operator
+
+    double? result = null; // the current result
+
+    foreach (string word in words) // iterate over the words
+    {
+
+        // check if the word is a number
+        bool isNumber = double.TryParse(word, out double number);
+
+        // if the word is a number
+        if (isNumber)
+        {
+            // if there is no current operator
+            if (currentOperator == null)
+            {
+                // if there is no result, set the result to the number
+
+                // the result should not be already set
+                if (result != null)
+                {
+                    // if the result is already set, throw an exception
+                    throw new InvalidOperationException("Invalid input: the result is already set, an operator is expected");
+                }
+
+                // set the result to the number
+                result = number;
+            }
+            // if there is a current operator
+            else if (result != null) // if there is a result
+            {
+                if (currentOperator == "+")
+                {
+                    // add the number to the result
+                    result += number;
+                }
+                else if (currentOperator == "-")
+                {
+                    // subtract the number from the result
+                    result -= number;
+                }
+                else if (currentOperator == "*")
+                {
+                    // multiply the result by the number
+                    result *= number;
+                }
+                else if (currentOperator == "/")
+                {
+                    // check if the number is zero
+                    if (number == 0)
+                    {
+                        throw new DivideByZeroException(); // division by zero
+                    }
+                    // divide the result by the number
+                    result /= number;
+                }
+                else if (currentOperator == "^")
+                {
+                    // raise the result to the power of the number
+                    result = Math.Pow(result.Value, number);
+                }
+                else if (currentOperator == "%")
+                {
+                    // take the result modulo the number
+                    result %= number;
+                }
+                else
+                {
+                    // if the operator is invalid, throw an exception
+                    throw new InvalidOperationException($"Invalid operator: '{currentOperator}'");
+                }
+
+            }
+            else
+            {
+                // if there is no result, throw an exception
+                throw new InvalidOperationException("Invalid input: there is no result");
+            }
+
+            // reset the current operator
+            currentOperator = null;
+        }
+        else
+        {
+            // if the word is not a number
+
+            // if the word is an operator
+            if (word == "+" || word == "-" || word == "*" || word == "/" || word == "^" || word == "%")
+            {
+                // if there is no current operator, set the current operator
+                if (currentOperator == null)
+                {
+                    // set the current operator
+                    currentOperator = word;
+                }
+                else
+                {
+                    // if the word is an operator and there is already a current operator, throw an exception
+                    throw new InvalidOperationException($"Invalid input: the word is an operator and there is already a current operator: '{currentOperator}'");
+                }
+            }
+            else
+            {
+                // if the word is not a number or an operator, throw an exception
+                throw new InvalidOperationException($"Invalid input: the word is not a number or an operator: '{word}'");
+            }
+        }
+
+    }
+
+    // if there is no result, throw an exception
+    if (result == null)
+    {
+        throw new InvalidOperationException("Invalid input: there is no result");
+    }
+
+    return result.Value; // return the result
 }
