@@ -6,7 +6,11 @@ ProcessFormulaVerbose("1 + 2 / 3"); // 1
 ProcessFormulaVerbose("1 + 2 ^ 3"); // 27
 ProcessFormulaVerbose("1 + 2 % 3"); // 0
 ProcessFormulaVerbose("2,5 * 2"); // 5
+
 ProcessFormulaVerbose("5 + ( -1 * ( 1 - ( 3 * 2 * 2 ) / 10 ) )"); // 6,1
+
+ProcessFormulaVerbose("sqrt ( 9 + 16 )"); // 5
+ProcessFormulaVerbose("( 3 ^ 2 ) + ( 4 ^ 2 )"); // 25
 
 double resultPartial = ProcessFormulaWords("1 + ( 6 / 3 )".Split(" "), 3, 5);
 Console.WriteLine("Partial result of '1 + ( 6 / 3 )' : " + resultPartial);
@@ -99,7 +103,7 @@ static double ProcessFormulaWords(string[] words, int startIndex, int endIndex)
                 result = number;
             }
             // if there is a current operator
-            else if (result != null) // if there is a result
+            else if (result != null || currentOperator == "sqrt") // if there is a result
             {
                 if (currentOperator == "+")
                 {
@@ -136,6 +140,11 @@ static double ProcessFormulaWords(string[] words, int startIndex, int endIndex)
                     // take the result modulo the number
                     result %= number;
                 }
+                else if (currentOperator == "sqrt")
+                {
+                    // take the square root of the result
+                    result = Math.Sqrt(number);
+                }
                 else
                 {
                     // if the operator is invalid, throw an exception
@@ -157,7 +166,7 @@ static double ProcessFormulaWords(string[] words, int startIndex, int endIndex)
             // if the word is not a number
 
             // if the word is an operator
-            if (word == "+" || word == "-" || word == "*" || word == "/" || word == "^" || word == "%")
+            if (word == "+" || word == "-" || word == "*" || word == "/" || word == "^" || word == "%" || word == "sqrt")
             {
                 // if there is no current operator, set the current operator
                 if (currentOperator == null)
