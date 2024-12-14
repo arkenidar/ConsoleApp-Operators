@@ -11,6 +11,7 @@ ProcessFormulaVerbose("5 + ( -1 * ( 1 - ( 3 * 2 * 2 ) / 10 ) )"); // 6,1
 
 ProcessFormulaVerbose("sqrt ( 9 + 16 )"); // 5
 ProcessFormulaVerbose("( 3 ^ 2 ) + ( 4 ^ 2 )"); // 25
+ProcessFormulaVerbose("sqrt ( ( 3 ^ 2 ) + ( 4 ^ 2 ) )"); // 5
 
 double resultPartial = ProcessFormulaWords("1 + ( 6 / 3 )".Split(" "), 3, 5);
 Console.WriteLine("Partial result of '1 + ( 6 / 3 )' : " + resultPartial);
@@ -70,9 +71,19 @@ static double ProcessFormulaWords(string[] words, int startIndex, int endIndex)
             if (word == "(")
             {
                 int closingIndex = -1; // the closing index of the parenthesis
-                for (int searchClosingIndex = endIndex; searchClosingIndex >= startIndex; searchClosingIndex--)
+                // find the closing parenthesis
+                int depth = 0;
+                for (int searchClosingIndex = currentIndex; searchClosingIndex <= endIndex; searchClosingIndex += 1)
                 {
-                    if (words[searchClosingIndex] == ")")
+                    if (words[searchClosingIndex] == "(")
+                    {
+                        depth++;
+                    }
+                    else if (words[searchClosingIndex] == ")")
+                    {
+                        depth--;
+                    }
+                    if (words[searchClosingIndex] == ")" && depth == 0) // if the closing parenthesis is found
                     {
                         closingIndex = searchClosingIndex;
                         break;
@@ -130,7 +141,7 @@ static double ProcessFormulaWords(string[] words, int startIndex, int endIndex)
                     // divide the result by the number
                     result /= number;
                 }
-                else if (currentOperator == "^")
+                else if (currentOperator == "^" && result != null)
                 {
                     // raise the result to the power of the number
                     result = Math.Pow(result.Value, number);
