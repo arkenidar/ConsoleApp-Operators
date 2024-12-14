@@ -6,6 +6,7 @@ ProcessFormulaVerbose("1 + 2 / 3"); // 1
 ProcessFormulaVerbose("1 + 2 ^ 3"); // 27
 ProcessFormulaVerbose("1 + 2 % 3"); // 0
 ProcessFormulaVerbose("2,5 * 2"); // 5
+ProcessFormulaVerbose("5 + ( -1 * ( 1 - ( 3 * 2 * 2 ) / 10 ) )"); // 6,1
 
 double resultPartial = ProcessFormulaWords("1 + ( 6 / 3 )".Split(" "), 3, 5);
 Console.WriteLine("Partial result of '1 + ( 6 / 3 )' : " + resultPartial);
@@ -60,8 +61,28 @@ static double ProcessFormulaWords(string[] words, int startIndex, int endIndex)
         bool isNumber = double.TryParse(word, out double number);
 
         // if the word is a number
-        if (isNumber)
+        if (isNumber || word == "(")
         {
+            if (word == "(")
+            {
+                int closingIndex = -1; // the closing index of the parenthesis
+                for (int searchClosingIndex = endIndex; searchClosingIndex >= startIndex; searchClosingIndex--)
+                {
+                    if (words[searchClosingIndex] == ")")
+                    {
+                        closingIndex = searchClosingIndex;
+                        break;
+                    }
+                }
+                if (closingIndex == -1)
+                {
+                    throw new InvalidOperationException("Invalid input: no closing parenthesis");
+                }
+                double resultPartial = ProcessFormulaWords(words, currentIndex + 1, closingIndex - 1);
+                currentIndex = closingIndex;
+                number = resultPartial;
+            }
+
             // if there is no current operator
             if (currentOperator == null)
             {
