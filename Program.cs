@@ -1,4 +1,10 @@
-﻿// process a math formula with the operators +, -, *, /, ^, %
+﻿
+// [ITA] programma CS per calcolo di formule matematica stile calcolatrice scientifica
+
+// testing the capabilities
+// [ITA] prove di usi mirati a fine di verificare correttezze di funzionamento
+
+// Process a math formula with the operators +, -, *, /, ^, %
 ProcessFormulaVerbose("1 + 2 + 3"); // 6
 ProcessFormulaVerbose("1 + 2 - 3"); // 0
 ProcessFormulaVerbose("1 + 2 * 3"); // 9
@@ -7,38 +13,51 @@ ProcessFormulaVerbose("1 + 2 ^ 3"); // 27
 ProcessFormulaVerbose("1 + 2 % 3"); // 0
 ProcessFormulaVerbose("2,5 * 2"); // 5
 
+// Process a complex formula with nested operations
 ProcessFormulaVerbose("5 + ( -1 * ( 1 - ( 3 * 2 * 2 ) / 10 ) )"); // 6,1
 
+// Process formulas with functions like sqrt
 ProcessFormulaVerbose("sqrt ( 9 + 16 )"); // 5
 ProcessFormulaVerbose("( 3 ^ 2 ) + ( 4 ^ 2 )"); // 25
 ProcessFormulaVerbose("sqrt ( ( 3 ^ 2 ) + ( 4 ^ 2 ) )"); // 5
 
+// Process a formula and get a partial result
+// The parameters represent the formula split into words, and the start and end indices for processing
 double resultPartial = ProcessFormulaWords("1 + ( 6 / 3 )".Split(" "), 3, 5);
 Console.WriteLine("Partial result of '1 + ( 6 / 3 )' : " + resultPartial);
 
+// Start a loop to continuously accept user input for math formulas
+// [ITA] ripetutamente chiede una formula di calcolo e prova a calcolarla se valida
 while (true)
 {
     Console.Write("Enter a supported math formula: ");
     string? line = Console.ReadLine();
 
+    // Exit the program if user enters "exit" or null input
     if (line == null || line == "exit")
     {
         Console.WriteLine("Exiting...");
         return;
     }
 
+    // Process the user's formula input
     ProcessFormulaVerbose(line);
 }
 
+// Processes a mathematical formula and displays the result or error message
+// Parameters:
+//   line: The mathematical expression to evaluate
 static void ProcessFormulaVerbose(string line)
 {
     try
     {
+        // Attempt to evaluate the mathematical expression
         var result = ProcessFormulaString(line);
         Console.WriteLine($"The result of '{line}' is '{result}'");
     }
     catch (Exception ex)
     {
+        // Display any errors that occur during processing
         Console.WriteLine($"Error: {ex.Message}");
     }
 }
@@ -49,6 +68,8 @@ static double ProcessFormulaString(string line)
     return ProcessFormulaWords(words, 0, words.Length - 1);
 }
 
+// [ITA] calcola una sottoparte , utile per le coppie di parentesi ...
+// ... che delimitano sottoparti
 static double ProcessFormulaWords(string[] words, int startIndex, int endIndex)
 {
     if (endIndex < startIndex) throw new IndexOutOfRangeException("Invalid index: endIndex < startIndex");
@@ -60,6 +81,7 @@ static double ProcessFormulaWords(string[] words, int startIndex, int endIndex)
     for (int currentIndex = startIndex; currentIndex <= endIndex; currentIndex++) // iterate over the words
     {
 
+        // [ITA] scorri parte per parte ovvero parola per parola
         string word = words[currentIndex];
 
         // check if the word is a number
@@ -68,6 +90,8 @@ static double ProcessFormulaWords(string[] words, int startIndex, int endIndex)
         // if the word is a number
         if (isNumber || word == "(")
         {
+            // [ITA] numero o parentesi che calcolata produce numero
+
             if (word == "(")
             {
                 int closingIndex = -1; // the closing index of the parenthesis
@@ -93,6 +117,8 @@ static double ProcessFormulaWords(string[] words, int startIndex, int endIndex)
                 {
                     throw new InvalidOperationException("Invalid input: no closing parenthesis");
                 }
+                // [ITA] dopo aver trovato la parentesi di chiusura ...
+                // ... calcola il pezzo di formula da esse racchiuso
                 double resultPartial = ProcessFormulaWords(words, currentIndex + 1, closingIndex - 1);
                 currentIndex = closingIndex;
                 number = resultPartial;
@@ -116,6 +142,8 @@ static double ProcessFormulaWords(string[] words, int startIndex, int endIndex)
             // if there is a current operator
             else if (result != null || currentOperator == "sqrt") // if there is a result
             {
+                // [ITA] operatori che compiono operazioni sugli operandi
+
                 if (currentOperator == "+")
                 {
                     // add the number to the result
@@ -174,6 +202,12 @@ static double ProcessFormulaWords(string[] words, int startIndex, int endIndex)
         }
         else
         {
+            // [ITA] se non è numero o equivalente ( le parentesi lo sono ) ...
+            // ... prova ad assicurarsi che sia un valido operatore supportato ...
+            // ... e lo mette da parte per quando arriva il secondo operando ...
+            // ... per gli operatori binari o l' unico operando
+            // ... per sqrt ( radice quadrata ) , square root
+
             // if the word is not a number
 
             // if the word is an operator
