@@ -7,6 +7,9 @@ ProcessFormulaVerbose("1 + 2 ^ 3"); // 27
 ProcessFormulaVerbose("1 + 2 % 3"); // 0
 ProcessFormulaVerbose("2,5 * 2"); // 5
 
+double resultPartial = ProcessFormulaWords("1 + ( 6 / 3 )".Split(" "), 3, 5);
+Console.WriteLine("Partial result of '1 + ( 6 / 3 )' : " + resultPartial);
+
 while (true)
 {
     Console.Write("Enter a supported math formula: ");
@@ -25,7 +28,7 @@ static void ProcessFormulaVerbose(string line)
 {
     try
     {
-        var result = ProcessFormula(line);
+        var result = ProcessFormulaString(line);
         Console.WriteLine($"The result of '{line}' is '{result}'");
     }
     catch (Exception ex)
@@ -34,16 +37,24 @@ static void ProcessFormulaVerbose(string line)
     }
 }
 
-static double ProcessFormula(string line)
+static double ProcessFormulaString(string line)
 {
     string[] words = line.Split(" "); // split the line into words
+    return ProcessFormulaWords(words, 0, words.Length - 1);
+}
+
+static double ProcessFormulaWords(string[] words, int startIndex, int endIndex)
+{
+    if (endIndex < startIndex) throw new IndexOutOfRangeException("Invalid index: endIndex < startIndex");
 
     string? currentOperator = null; // the current operator
 
     double? result = null; // the current result
 
-    foreach (string word in words) // iterate over the words
+    for (int currentIndex = startIndex; currentIndex <= endIndex; currentIndex++) // iterate over the words
     {
+
+        string word = words[currentIndex];
 
         // check if the word is a number
         bool isNumber = double.TryParse(word, out double number);
