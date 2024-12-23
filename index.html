@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>math formula calculator</title>
+</head>
+
+<body>
+
+    <h1>Math Formula Calculator</h1>
+    <input type="text" id="formula" placeholder="Enter formula">
+    <button id="calculate">Calculate</button>
+    <p id="result"></p>
+
+    <script type="module">
+
+        //import { evaluate } from 'mathjs'
+
+        // tsc MathCalculator.ts -t esnext
+        import { MathCalculator } from './MathCalculator.js'
+
+        function calculate() {
+            var formula = document.getElementById('formula').value;
+            var result = MathCalculator.processFormulaString(formula);
+            document.getElementById('result').innerText = result;
+        }
+
+        document.getElementById('calculate').addEventListener('click', calculate);
+    </script>
+</body>
+
+</html>
