@@ -140,7 +140,14 @@ static double ProcessFormulaWords(string[] words, int startIndex, int endIndex)
                 result = number;
             }
             // if there is a current operator
-            else if (result != null || currentOperator == "sqrt") // if there is a result
+            else if (currentOperator == "sqrt")
+            {
+                // sqrt ( square root ) operator require only one operand
+                // if the current operator is sqrt, calculate the square root of the number
+                result = Math.Sqrt(number);
+            }
+            // if there is a result ( operations that require two operands )
+            else if (result != null)
             {
                 // [ITA] operatori che compiono operazioni sugli operandi
 
@@ -178,11 +185,6 @@ static double ProcessFormulaWords(string[] words, int startIndex, int endIndex)
                 {
                     // take the result modulo the number
                     result %= number;
-                }
-                else if (currentOperator == "sqrt")
-                {
-                    // take the square root of the result
-                    result = Math.Sqrt(number);
                 }
                 else
                 {

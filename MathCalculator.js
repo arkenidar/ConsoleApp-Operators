@@ -7,7 +7,8 @@ export class MathCalculator {
             console.log(`The result of '${line}' is '${result}'`);
         }
         catch (error) {
-            console.error(`Error: ${error.message}`);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.error(`Error: ${errorMessage}`);
         }
     }
     static processFormulaString(line) {
@@ -76,9 +77,6 @@ export class MathCalculator {
                             break;
                         case "%":
                             result %= number;
-                            break;
-                        case "sqrt":
-                            result = Math.sqrt(number);
                             break;
                         default:
                             throw new Error(`Invalid operator: '${currentOperator}'`);
