@@ -10,8 +10,10 @@
 <body>
 
     <h1>Math Formula Calculator</h1>
-    <input type="text" id="formula" placeholder="Enter formula">
-    <button id="calculate">Calculate</button>
+    <form id="formula_form">
+        <input type="text" id="formula" placeholder="Enter formula">
+        <button id="calculate">Calculate</button>
+    </form>
     <p id="result"></p>
 
     <script type="module">
@@ -28,6 +30,11 @@
         }
 
         document.getElementById('calculate').addEventListener('click', calculate);
+
+        document.getElementById('formula_form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            calculate();
+        });
     </script>
 
     <hr>
