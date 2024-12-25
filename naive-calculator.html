@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>naive calculator with eval()</title>
+</head>
+
+<body>
+    <h1>Naive Calculator</h1>
+    <h2>naive calculator with eval()</h2>
+    <form>
+        <input type="text" name="formula" placeholder="js math formula">
+    </form>
+    <pre id="result"></pre>
+    <script>
+        document.querySelector('form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formula = e.target.formula.value;
+            try {
+                const result = eval(formula);
+                document.querySelector('#result').textContent = result;
+            } catch (error) {
+                document.querySelector('#result').textContent = error.message;
+            }
+        });
+    </script>
+</body>
+
+</html>
