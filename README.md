@@ -16,5 +16,5 @@
 - / division (binary)
 - % modulo (binary)
 - ^ exponentiation (binary)
-- sqrt quare root (unary)
+- sqrt square root (unary)
 - "unary" means 1 operand for the operator
